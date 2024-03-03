@@ -58,41 +58,6 @@ function CursoComponent() {
     }
   }
 
-  const handleModificarCurso = async (id) => {
-    // Aquí puedes agregar el código para modificar el curso
-    // Por ejemplo, podrías abrir un formulario con los datos del curso y permitir al usuario modificarlos
-  }
-
-  const handleEliminarCurso = async (id) => {
-    const { data, error } = await supabase
-      .from('Cursos')
-      .delete()
-      .eq('id', id)
-
-    if (error) {
-      console.error('Error al eliminar el curso:', error.message)
-      alert('Error al eliminar el curso: ' + error.message)
-    } else {
-      console.log('Curso eliminado:', data[0])
-      alert('Curso eliminado correctamente')
-      fetchCursos() // Actualizar la lista de cursos
-    }
-  }
-
-  const handleMostrarDetalles = async (id) => {
-    const { data, error } = await supabase
-      .from('Cursos')
-      .select('*')
-      .eq('id', id)
-
-    if (error) {
-      console.error('Error al obtener los detalles del curso:', error.message)
-      alert('Error al obtener los detalles del curso: ' + error.message)
-    } else {
-      console.log('Detalles del curso:', data[0])
-      alert('Detalles del curso: ' + JSON.stringify(data[0]))
-    }
-  }
   return (
     <Container maxWidth="xs">
       <Box
@@ -155,11 +120,6 @@ function CursoComponent() {
                 </TableCell>
                 <TableCell>{curso.descripcion}</TableCell>
                 <TableCell>{curso.id_docente}</TableCell>
-                <TableCell>
-                <Button variant="contained" color="primary" onClick={() => handleModificarCurso(curso.id)}>Modificar</Button>
-                  <Button variant="contained" color="secondary" onClick={() => handleEliminarCurso(curso.id)}>Eliminar</Button>
-                  <Button variant="contained" onClick={() => handleMostrarDetalles(curso.id)}>Detalles</Button>
-                </TableCell>
               </TableRow>
             ))}
           </TableBody>
@@ -170,6 +130,7 @@ function CursoComponent() {
 }
 
 export default CursoComponent
+
 
 
 
