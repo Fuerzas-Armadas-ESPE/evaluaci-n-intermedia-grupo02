@@ -1,6 +1,7 @@
 import { useState } from 'react'
-import { Button, TextField, Container, Box, FormControl, InputLabel, Select, MenuItem } from '@mui/material'
+import { Button, TextField, Container, Box, Alert, Select, MenuItem } from '@mui/material'
 import supabase from './supabaseClient'
+import ProfesorPanel from './ProfesorPanel'
 
 function AuthComponent() {
   const [nombre, setNombre] = useState('')
@@ -8,6 +9,8 @@ function AuthComponent() {
   const [contraseña, setContraseña] = useState('')
   const [rol, setRol] = useState('')
   const [isLogin, setIsLogin] = useState(true)
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const [error, setError] = useState('')
 
   const handleRegister = async (e) => {
     e.preventDefault()
@@ -19,10 +22,9 @@ function AuthComponent() {
       ])
 
     if (error) {
-      console.error('Error en el registro:', error.message)
+        setError('Error al registrarse.')
     } else {
-      console.log('Usuario registrado')
-      setIsLogin(true)
+        setError('Registro exitoso. Por favor, inicie sesión.')
     }
   }
 
@@ -36,13 +38,16 @@ function AuthComponent() {
       .eq('contraseña', contraseña)
 
     if (error) {
-      console.error('Error en el inicio de sesión:', error.message)
+        setError('Error en el inicio de sesión.')
     } else if (data.length === 0) {
-      console.error('Nombre de usuario o contraseña incorrectos')
+      setError('Nombre de usuario o contraseña incorrectos.')
     } else {
-      console.log('Usuario inició sesión:', data[0])
-      // Aquí puedes redirigir al usuario al componente de inicio
+      setIsLoggedIn(true)
+      setRol(data[0].rol)
     }
+  }
+  if (isLoggedIn && rol === 'Profesor') {
+    return <ProfesorPanel />
   }
 
   return (
@@ -59,6 +64,7 @@ function AuthComponent() {
           }}
         >
           <h2>Iniciar sesión</h2>
+          {error && <Alert severity="error">{error}</Alert>}
           <TextField
             label="Nombre"
             value={nombre}
@@ -89,6 +95,7 @@ function AuthComponent() {
           }}
         >
           <h2>Registrarse</h2>
+          {error && <Alert severity="error">{error}</Alert>}
           <TextField
             label="Nombre"
             value={nombre}
@@ -111,16 +118,16 @@ function AuthComponent() {
             fullWidth
             margin="normal"
           />
-          <FormControl fullWidth margin="normal">
-            <InputLabel>Rol</InputLabel>
-            <Select
-              value={rol}
-              onChange={(e) => setRol(e.target.value)}
-            >
-              <MenuItem value={'Estudiante'}>Estudiante</MenuItem>
-              <MenuItem value={'Profesor'}>Profesor</MenuItem>
-            </Select>
-          </FormControl>
+          <Select
+            label="Rol"
+            value={rol}
+            onChange={(e) => setRol(e.target.value)}
+            fullWidth
+            margin="normal"
+          >
+            <MenuItem value="Profesor">Profesor</MenuItem>
+            <MenuItem value="Estudiante">Estudiante</MenuItem>
+          </Select>
           <Button type="submit" variant="contained" color="primary" fullWidth>Registrarse</Button>
           <Button onClick={() => setIsLogin(true)} fullWidth>Volver al inicio de sesión</Button>
         </Box>
