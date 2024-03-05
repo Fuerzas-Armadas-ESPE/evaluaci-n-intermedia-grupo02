@@ -15,10 +15,10 @@
     "@mui/material": "^5.15.11",
     "@supabase/supabase-js": "^2.39.7",
     "@supabase/ui": "^0.36.5",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
     "jspdf": "^2.5.1",
-    "jspdf-autotable": "^3.8.2"
+    "jspdf-autotable": "^3.8.2",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2"
   },
   "devDependencies": {
     "@types/react": "^18.2.56",

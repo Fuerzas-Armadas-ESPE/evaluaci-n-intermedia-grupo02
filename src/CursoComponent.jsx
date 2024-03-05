@@ -12,6 +12,7 @@ function CursoComponent() {
   useEffect(() => {
     fetchDocentes()
     fetchCursos()
+    getDocentes().then(setDocentes)
   }, [])
 
   const fetchDocentes = async () => {
@@ -39,6 +40,19 @@ function CursoComponent() {
     }
   }
 
+  const getDocentes = async () => {
+    const { data, error } = await supabase
+      .from('Usuarios')
+      .select('*')
+      .eq('rol', 'Profesor')
+  
+    if (error) {
+      console.error('Error al obtener los docentes:', error.message)
+    } else {
+      return data
+    }
+  }
+
   const handleCrearCurso = async (e) => {
     e.preventDefault()
 
@@ -47,15 +61,19 @@ function CursoComponent() {
       .insert([
         { nombre, descripcion, id_docente },
       ])
-
-    if (error) {
-      console.error('Error al crear el curso:', error.message)
-      alert('Error al crear el curso: ' + error.message)
-    } else {
-      console.log('Curso creado:', data[0])
-      alert('Curso creado correctamente')
-      fetchCursos() // Actualizar la lista de cursos
-    }
+      if (error) {
+        console.error('Error al crear el curso:', error.message)
+        alert('Error al crear el curso: ' + error.message)
+      } else if (data) {
+        console.log('Curso creado:', data[0])
+        alert('Curso creado correctamente')
+        fetchCursos() // Actualizar la lista de cursos
+      } else {
+        console.log('Curso creado: data es null, pero no hay error')
+        alert('Curso creado correctamente')
+        fetchCursos() // Actualizar la lista de cursos
+      }
+           
   }
 
   return (
@@ -89,7 +107,9 @@ function CursoComponent() {
           <InputLabel id="docente-label">Profesor</InputLabel>
           <Select
             labelId="docente-label"
+            id="docente"
             value={id_docente}
+            label="Docente"
             onChange={(e) => setIdDocente(e.target.value)}
           >
             {docentes.map((docente) => (

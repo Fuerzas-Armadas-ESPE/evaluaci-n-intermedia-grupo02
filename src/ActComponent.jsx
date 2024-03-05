@@ -36,8 +36,10 @@ function ActComponent() {
       setMessage('Error al crear la actividad.');
     } else {
       setMessage('Actividad creada con éxito.');
+      const { data: actividadesData } = await supabase.from('Actividades').select('*');
+      setActividades(actividadesData);
     }
-  };
+  };  
 
   const handleModificarActividad = async (id, estadoActual) => {
     console.log(id_tema);
@@ -55,6 +57,7 @@ function ActComponent() {
       setMessage('Error al eliminar la actividad.');
     } else {
       setMessage('Actividad eliminada con éxito.');
+      setActividades(actividades.filter((actividad) => actividad.id !== id));
     }
   };
 
@@ -110,7 +113,7 @@ function ActComponent() {
             onChange={() => handleToggleEstado(actividad.id, actividad.estado)}
           />
           <Button onClick={() => handleModificarActividad(actividad.id, actividad.estado)} variant="contained" color="primary">Modificar Actividad</Button>
-          <Button onClick={() => handleEliminarActividad(actividad.id)} variant="contained" color="primary">Eliminar Actividad</Button>
+          <Button onClick={() => handleEliminarActividad(actividad.id)} variant="contained" color="secondary">Eliminar Actividad</Button>
         </div>
       ))}
     </div>

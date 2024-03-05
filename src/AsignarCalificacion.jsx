@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Button, TextField, Container, Box, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
+import { Button, TextField, Container, FormControl, InputLabel, Select, MenuItem, Alert } from '@mui/material';
 import supabase from './supabaseClient'
 
 function AsignarCalificacion() {
@@ -8,6 +8,7 @@ function AsignarCalificacion() {
     const [actividadSeleccionada, setActividadSeleccionada] = useState('');
     const [estudianteSeleccionado, setEstudianteSeleccionado] = useState('');
     const [calificacion, setCalificacion] = useState('');
+    const [message, setMessage] = useState('');
   
     // Obtén las actividades y los estudiantes al cargar el componente
     useEffect(() => {
@@ -25,15 +26,16 @@ function AsignarCalificacion() {
         { calificacion: parseFloat(calificacion), id_actividad: actividadSeleccionada, id_estudiante: estudianteSeleccionado }
       ]);
       if (error) {
-        console.error('Error insertando la calificación', error);
+        setMessage('Error insertando la calificación');
       } else {
-        alert('Calificación asignada con éxito');
+        setMessage('Calificación asignada con éxito');
       }
     };
   
     return (
       <Container>
         <h1>Asignar Calificación</h1>
+        {message && <Alert severity={message.startsWith('Error') ? 'error' : 'success'}>{message}</Alert>} 
         <FormControl fullWidth>
           <InputLabel>Actividad</InputLabel>
           <Select value={actividadSeleccionada} onChange={(e) => setActividadSeleccionada(e.target.value)}>

@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Button, TextField, Container, Box, Alert, Select, MenuItem } from '@mui/material'
 import supabase from './supabaseClient'
 import ProfesorPanel from './ProfesorPanel'
+import EstudiantePanel from './EstudiantePanel'
 
 function AuthComponent() {
   const [nombre, setNombre] = useState('')
@@ -30,15 +31,20 @@ function AuthComponent() {
 
   const handleLogin = async (e) => {
     e.preventDefault()
-
+  
     const { data, error } = await supabase
       .from('Usuarios')
       .select('*')
       .eq('nombre', nombre)
       .eq('contraseña', contraseña)
-
+  
+    if (data && data.length > 0) {
+      // Guarda el ID del usuario en el almacenamiento local
+      localStorage.setItem('usuario_id', data[0].id)
+    }
+  
     if (error) {
-        setError('Error en el inicio de sesión.')
+      setError('Error en el inicio de sesión.')
     } else if (data.length === 0) {
       setError('Nombre de usuario o contraseña incorrectos.')
     } else {
@@ -46,8 +52,23 @@ function AuthComponent() {
       setRol(data[0].rol)
     }
   }
+  const handleLogout = () => {
+    // Restablece el estado al estado inicial
+    setNombre('')
+    setCorreoElectronico('')
+    setContraseña('')
+    setRol('')
+    setIsLoggedIn(false)
+    setError('')
+    localStorage.removeItem('usuario_id') // Elimina el ID del usuario del almacenamiento local
+  }
+
   if (isLoggedIn && rol === 'Profesor') {
-    return <ProfesorPanel />
+    return <ProfesorPanel handleLogout={handleLogout} />
+  }
+  
+  if (isLoggedIn && rol === 'Estudiante') {
+    return <EstudiantePanel handleLogout={handleLogout} />
   }
 
   return (
