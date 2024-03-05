@@ -1,27 +1,45 @@
-import { useState } from 'react'
-import { Button, TextField, Container, Box } from '@mui/material'
+import { useState, useEffect } from 'react'
+import { Button, TextField, Container, Box, FormControl, InputLabel, Select, MenuItem } from '@mui/material'
 import supabase from './supabaseClient'
 
 function TemaComponent() {
   const [titulo, setTitulo] = useState('')
   const [objetivo, setObjetivo] = useState('')
   const [id_curso, setIdCurso] = useState('')
+  const [cursos, setCursos] = useState([])
+
+  useEffect(() => {
+    getCursos().then(setCursos)
+  }, [])
+
+  const getCursos = async () => {
+    const { data, error } = await supabase
+      .from('Cursos')
+      .select('*')
+
+    if (error) {
+      console.error('Error al obtener los cursos:', error.message)
+    } else {
+      return data
+    }
+  }
 
   const handleCrearTema = async (e) => {
     e.preventDefault()
-
+  
     const { data, error } = await supabase
       .from('Temas')
       .insert([
         { titulo, objetivo, id_curso },
       ])
-
+  
     if (error) {
       console.error('Error al crear el tema:', error.message)
-    } else {
+    } else if (data) { // Asegúrate de que data no es null antes de intentar acceder a data[0]
       console.log('Tema creado:', data[0])
     }
   }
+  
 
   return (
     <Container maxWidth="xs">
@@ -50,13 +68,17 @@ function TemaComponent() {
           fullWidth
           margin="normal"
         />
-        <TextField
-          label="ID del Curso"
-          value={id_curso}
-          onChange={(e) => setIdCurso(e.target.value)}
-          fullWidth
-          margin="normal"
-        />
+        <FormControl fullWidth margin="normal">
+          <InputLabel>ID del Curso</InputLabel>
+          <Select
+            value={id_curso}
+            onChange={(e) => setIdCurso(e.target.value)}
+          >
+            {cursos.map((curso) => (
+              <MenuItem key={curso.id} value={curso.id}>{curso.nombre}</MenuItem>
+            ))}
+          </Select>
+        </FormControl>
         <Button type="submit" variant="contained" color="primary" fullWidth>Crear Tema</Button>
       </Box>
     </Container>
